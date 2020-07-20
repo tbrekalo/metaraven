@@ -1,17 +1,14 @@
-# Raven
+# Metaraven
 
-[![Latest GitHub release](https://img.shields.io/github/release/lbcb-sci/raven.svg)](https://github.com/lbcb-sci/raven/releases/latest)
-[![Build status for c++/clang++](https://travis-ci.org/lbcb-sci/raven.svg?branch=master)](https://travis-ci.org/lbcb-sci/raven)
-
-Raven is a de novo genome assembler for long uncorrected reads.
+Metaraven is a de novo genome assembler for long uncorrected reads 
+on metagenomic populations. 
 
 ## Usage
-To build raven run the following commands:
+To build metaraven run the following commands:
 ```bash
-git clone --recursive https://github.com/lbcb-sci/raven.git raven
-cd raven && mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release .. && make
-./bin/raven
+git clone --recursive https://github.com/tbrekalo/metaraven.git metaraven
+cd metaraven && bash ./build.sh
+
 ```
 which will display the following usage:
 ```bash
@@ -72,21 +69,6 @@ To build submodule racon with CUDA support, add `-Dracon_enable_cuda=ON` while r
 - gcc 5.0+
 - cmake 3.10+
 - CUDA 9.0+
-
-### Other options
-
-#### Brew
-Install [Linuxbrew](https://docs.brew.sh/Homebrew-on-Linux) and run the following command:
-
-```bash
-brew install brewsci/bio/raven-assember
-```
-
-#### Conda
-Install [conda](https://conda.io/en/latest/miniconda.html) and run the following command:
-```bash
-conda install -c bioconda raven-assembler
-```
 
 ## Acknowledgment
 

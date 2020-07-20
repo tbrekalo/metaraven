@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(raven VERSION 1.1.10
+project(metaraven VERSION 1.1.10
               LANGUAGES CXX
-              DESCRIPTION "Raven is a de novo genome assembler for long uncorrected reads.")
+              DESCRIPTION "Metaraven is a de novo genome assembler for long uncorrected reads\
+                            on metagenomic populations.")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 set(CMAKE_CXX_STANDARD 11)

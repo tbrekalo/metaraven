@@ -1,2 +1,8 @@
 # Compiled Object files
 build/
+
+# remote dev files
+.vscode
+
+*.fasta
+*.gz
