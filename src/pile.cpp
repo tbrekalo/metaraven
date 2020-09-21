@@ -59,6 +59,7 @@ void Pile::FindValidRegion(std::uint32_t coverage) {
     if (data_[i] < coverage) {
       continue;
     }
+    // TODO: allow for deviation
     for (std::uint32_t j = i + 1; j < end_; ++j) {
       if (data_[j] >= coverage) {
         continue;

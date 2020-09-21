@@ -1,2 +1,7 @@
 BasedOnStyle: Google
 Language: Cpp
+
+SortIncludes: false
+
+DerivePointerAlignment: false
+PointerAlignment: Left

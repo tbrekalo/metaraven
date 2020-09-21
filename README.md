@@ -12,9 +12,9 @@ cd metaraven && bash ./build.sh
 ```
 which will display the following usage:
 ```bash
-usage: raven [options ...] <sequences>
+usage: metaraven [options ...] <sequences>
 
-# default output is stdout
+  # default output is stdout
   <sequences>
     input file in FASTA/FASTQ format (can be compressed with gzip)
 
@@ -33,7 +33,8 @@ usage: raven [options ...] <sequences>
     -g, --gap <int>
       default: -4
       gap penalty (must be negative)
-    --graphical-fragment-assembly <string>
+    --second-run
+      reuses non-chimeric in combination with unitigs    --graphical-fragment-assembly <string>
       prints the assemblg graph in GFA format
     --resume
       resume previous run from last checkpoint
@@ -44,17 +45,6 @@ usage: raven [options ...] <sequences>
       prints the version number
     -h, --help
        prints the usage
-
-  only available when built with CUDA:
-    -c, --cuda-poa-batches <int>
-       default: 0
-       number of batches for CUDA accelerated polishing
-    -b, --cuda-banded-alignment
-       use banding approximation for polishing on GPU
-       (only applicable when -c is used)
-    -a, --cuda-alignment-batches <int>
-       default: 0
-       number of batches for CUDA accelerated alignment
 ```
 
 #### Dependencies

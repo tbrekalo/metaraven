@@ -27,7 +27,9 @@ namespace raven {
 
 class Graph {
  public:
-  Graph(bool weaken, std::shared_ptr<thread_pool::ThreadPool> thread_pool = nullptr);  // NOLINT
+  // TODO: Constructor from config
+  Graph(bool weaken, std::shared_ptr<thread_pool::ThreadPool> thread_pool =
+                         nullptr);  // NOLINT
 
   Graph(const Graph&) = delete;
   Graph& operator=(const Graph&) = delete;
@@ -37,27 +39,34 @@ class Graph {
 
   ~Graph() = default;
 
-  int stage() const {
-    return stage_;
-  }
+  int stage() const { return stage_; }
+
+  // takes ownership of the passed collection
+  std::vector<std::unique_ptr<biosoup::Sequence>> Preprocess(
+      std::vector<std::unique_ptr<biosoup::Sequence>>&& sequences);
 
   // break chimeric sequences, remove contained sequences and overlaps not
   // spanning bridged repeats at sequence ends
-  void Construct(std::vector<std::unique_ptr<biosoup::Sequence>>& sequences);  // NOLINT
+  void Construct(
+      std::vector<std::unique_ptr<biosoup::Sequence>>& sequences);  // NOLINT
+
+  // tries to reassemble unitig endings with relevant reads
+  // reutrns the expected number reconstructable organisms
+  std::size_t GreedyConstruct(
+      std::vector<std::unique_ptr<biosoup::Sequence>>& unitigs);
 
   // simplify with transitive reduction, tip prunning and bubble popping
   void Assemble();
 
+  // with the longest chain of unitig - filler overlaps
+  void GreedyAssemble(std::size_t const expected);
+
   // Racon wrapper
-  void Polish(
+  void Polish(  // TODO: Conf overload
       const std::vector<std::unique_ptr<biosoup::Sequence>>& sequences,
-      std::uint8_t match,
-      std::uint8_t mismatch,
-      std::uint8_t gap,
-      std::uint32_t cuda_poa_batches,
-      bool cuda_banded_alignment,
-      std::uint32_t cuda_alignment_batches,
-      std::uint32_t num_rounds);
+      std::uint8_t match, std::uint8_t mismatch, std::uint8_t gap,
+      std::uint32_t cuda_poa_batches, bool cuda_banded_alignment,
+      std::uint32_t cuda_alignment_batches, std::uint32_t num_rounds);
 
   // ignore nodes that are less than epsilon away from any junction node
   std::uint32_t CreateUnitigs(std::uint32_t epsilon = 0);
@@ -80,6 +89,9 @@ class Graph {
   // cereal store wrapper
   void Store() const;
 
+  // clear piles and assembly graph
+  void Clear();
+
  private:
   // inspired by (Myers 1995) & (Myers 2005)
   std::uint32_t RemoveTransitiveEdges();
@@ -95,7 +107,7 @@ class Graph {
 
   Graph() = default;  // needed for cereal
 
-  template<class Archive>
+  template <class Archive>
   void save(Archive& archive) const {  // NOLINT
     std::vector<std::pair<std::uint32_t, std::uint32_t>> connections;
     for (const auto& it : edges_) {
@@ -109,7 +121,7 @@ class Graph {
     archive(stage_, piles_, nodes_, edges_, connections);
   }
 
-  template<class Archive>
+  template <class Archive>
   void load(Archive& archive) {  // NOLINT
     std::vector<std::pair<std::uint32_t, std::uint32_t>> connections;
 
@@ -160,27 +172,17 @@ class Graph {
 
     ~Node() = default;
 
-    std::uint32_t indegree() const {
-      return inedges.size();
-    }
-    std::uint32_t outdegree() const {
-      return outedges.size();
-    }
+    std::uint32_t indegree() const { return inedges.size(); }
+    std::uint32_t outdegree() const { return outedges.size(); }
 
-    bool is_rc() const {
-      return id & 1;
-    }
-    bool is_junction() const {
-      return outdegree() > 1 || indegree() > 1;
-    }
+    bool is_rc() const { return id & 1; }
+    bool is_junction() const { return outdegree() > 1 || indegree() > 1; }
     bool is_tip() const {
       return outdegree() > 0 && indegree() == 0 && count < 6;
     }
-    bool is_unitig() const {
-      return count > 5 && data.size() > 9999;
-    }
+    bool is_unitig() const { return count > 5 && data.size() > 9999; }
 
-    template<class Archive>
+    template <class Archive>
     void serialize(Archive& archive) {  // NOLINT
       archive(id, name, data, count, is_circular, is_polished, transitive);
     }
@@ -209,15 +211,11 @@ class Graph {
 
     ~Edge() = default;
 
-    bool is_rc() const {
-      return id & 1;
-    }
+    bool is_rc() const { return id & 1; }
 
-    std::string Label() const {
-      return tail->data.substr(0, length);
-    }
+    std::string Label() const { return tail->data.substr(0, length); }
 
-    template<class Archive>
+    template <class Archive>
     void serialize(Archive& archive) {  // NOLINT
       archive(id, length, weight);
     }
@@ -235,9 +233,8 @@ class Graph {
   std::unordered_set<std::uint32_t> FindRemovableEdges(
       const std::vector<Node*>& path);
 
-  void RemoveEdges(
-      const std::unordered_set<std::uint32_t>& indices,
-      bool remove_nodes = false);
+  void RemoveEdges(const std::unordered_set<std::uint32_t>& indices,
+                   bool remove_nodes = false);
 
   // use (Fruchterman & Reingold 1991) with (Barnes & Hut 1986) approximation
   // (draw with misc/plotter.py)

@@ -4,5 +4,12 @@ build/
 # remote dev files
 .vscode
 
+*.cereal
 *.fasta
+*.fastq
+*.gfa
+
+*.fa
+*.fq
 *.gz
+

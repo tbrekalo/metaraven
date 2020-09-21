@@ -23,6 +23,8 @@ endif ()
 include_directories(vendor/cereal/include)
 
 add_executable(${PROJECT_NAME}
+  src/controller.cpp
+  src/common.cpp
   src/graph.cpp
   src/main.cpp
   src/pile.cpp)
